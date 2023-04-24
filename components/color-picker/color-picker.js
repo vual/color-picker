@@ -208,13 +208,15 @@ Component( {
         hsb: this.rgbToHsb(this.data.rgba)
       })
       this.setHexValue(this.data.rgba);
-      this.getSelectorQuery();
       wx.nextTick(() => {
         setTimeout(() => {
           this.setData({
             active: true
-          })
-        }, 50)
+          });
+          setTimeout(() => {
+            this.getSelectorQuery();
+          }, 350);
+        }, 50);
       })
 
     },
@@ -263,9 +265,7 @@ Component( {
       } = e.touches[0];
       this.setPosition(pageX, pageY, index);
     },
-    touchend(e) {
-      console.log(e);
-    },
+    touchend(e) {},
     /**
      * 设置位置
      */
