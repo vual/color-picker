@@ -71,11 +71,6 @@ Component( {
       b: 0,
       a: 1
     }, {
-      r: 244,
-      g: 67,
-      b: 54,
-      a: 1
-    }, {
       r: 233,
       g: 30,
       b: 99,
@@ -164,6 +159,11 @@ Component( {
       r: 121,
       g: 85,
       b: 72,
+      a: 1
+    }, {
+      r: 255,
+      g: 255,
+      b: 255,
       a: 1
     }, {
       r: 158,
@@ -481,7 +481,7 @@ Component( {
         rgba: rgba,
         hsb: hsb,
         hex: '#' + this.rgbToHex(rgba),
-        bgcolor: this.hsbToRgb({h: hsb.h, s: 100, b: 100})
+        bgcolor: this.hsbToRgb(hsb)
       })
       this.changePoint();
     },
