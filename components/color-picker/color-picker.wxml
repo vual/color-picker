@@ -6,7 +6,7 @@
             <view class="cp-header-button" bind:tap="confirm">确认</view>
         </view>
         <view class="cp-color__box" style="{{'background:'+('rgb('+bgcolor.r+','+bgcolor.g+','+bgcolor.b+')')+';'}}">
-            <view class="cp-background boxs" data-index="0" bind:touchstart="touchstart" bind:touchmove="touchmove" bind:touchend="touchend">
+            <view class="cp-background range-box" data-index="0" bind:touchstart="touchstart" bind:touchmove="touchmove">
                 <view class="cp-color-mask"></view>
                 <view class="cp-pointer" style="{{'top:'+(point[0].top-8+'px')+';'+('left:'+(point[0].left-8+'px')+';')}}"></view>
             </view>
@@ -16,12 +16,12 @@
                 <view class="cp-control__color-content" style="{{'background:'+('rgba('+rgba.r+','+rgba.g+','+rgba.b+','+rgba.a+')')+';'}}"></view>
             </view>
             <view class="cp-control-box__item">
-                <view class="cp-controller boxs" data-index="1" bind:touchstart="touchstart" bind:touchmove="touchmove" bind:touchend="touchend">
+                <view class="cp-controller range-box" data-index="1" bind:touchstart="touchstart" bind:touchmove="touchmove">
                     <view class="cp-hue">
                         <view class="cp-circle" style="{{'left:'+(point[1].left-12+'px')+';'}}"></view>
                     </view>
                 </view>
-                <view class="cp-controller boxs" data-index="2" bind:touchstart="touchstart" bind:touchmove="touchmove" bind:touchend="touchend">
+                <view class="cp-controller range-box" data-index="2" bind:touchstart="touchstart" bind:touchmove="touchmove">
                     <view class="cp-transparency" style="{{'background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgb('+rgba.r+','+rgba.g+','+rgba.b+'));'}}">
                         <view class="cp-circle" style="{{'left:'+(point[2].left-12+'px')+';'}}"></view>
                     </view>
@@ -33,7 +33,7 @@
                 <view class="cp-rgb-group">
                     <view class="cp-rgb">
                         <view class="cp-rgb-text">R</view>
-                        <view class="cp-rgb-box boxs" data-index="3" bind:touchstart="touchstart" bind:touchmove="touchmove" bind:touchend="touchend">
+                        <view class="cp-rgb-box range-box" data-index="3" bind:touchstart="touchstart" bind:touchmove="touchmove">
                             <view class="cp-rgb-line cp-rgb-r">
                                 <view class="cp-circle" style="{{'left:'+(point[3].left-12+'px')+';'}}"></view>
                             </view>
@@ -42,7 +42,7 @@
                     </view>
                     <view class="cp-rgb">
                         <view class="cp-rgb-text">G</view>
-                        <view class="cp-rgb-box boxs" data-index="4" bind:touchstart="touchstart" bind:touchmove="touchmove" bind:touchend="touchend">
+                        <view class="cp-rgb-box range-box" data-index="4" bind:touchstart="touchstart" bind:touchmove="touchmove">
                             <view class="cp-rgb-line cp-rgb-g">
                                 <view class="cp-circle" style="{{'left:'+(point[4].left-12+'px')+';'}}"></view>
                             </view>
@@ -51,7 +51,7 @@
                     </view>
                     <view class="cp-rgb">
                         <view class="cp-rgb-text">B</view>
-                        <view class="cp-rgb-box boxs" data-index="5" bind:touchstart="touchstart" bind:touchmove="touchmove" bind:touchend="touchend">
+                        <view class="cp-rgb-box range-box" data-index="5" bind:touchstart="touchstart" bind:touchmove="touchmove">
                             <view class="cp-rgb-line cp-rgb-b">
                                 <view class="cp-circle" style="{{'left:'+(point[5].left-12+'px')+';'}}"></view>
                             </view>

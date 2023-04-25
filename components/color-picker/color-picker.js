@@ -9,16 +9,16 @@ Component( {
         }
       }
     },
-    color: {
+    defaultColor: {
       type: Object,
       value: {
-        r: 0,
+        r: 255,
         g: 0,
         b: 0,
         a: 1
       }
     },
-    spareColor: {
+    optionColorList: {
       type: Array,
       value: [],
       observer(newVal) {
@@ -31,12 +31,11 @@ Component( {
   data: {
     show: false,
     active: false,
-    hex: '#000000',
     mode: 'rgb',
-    index: 0,
-    position: [],
+    boundaryData: [], // 元素边界信息
+    hex: '#000000',
     rgba: {
-      r: 0,
+      r: 255,
       g: 0,
       b: 0,
       a: 1
@@ -191,11 +190,11 @@ Component( {
   lifetimes: {
     attached() {
       this.setData({
-        rgba: this.properties.color,
+        rgba: this.properties.defaultColor,
       })
-      if (this.properties.spareColor.length !== 0) {
+      if (this.properties.optionColorList.length !== 0) {
         this.setData({
-          colorList: this.properties.spareColor
+          colorList: this.properties.optionColorList
         })
       }
     },
@@ -205,21 +204,46 @@ Component( {
     show() {
       this.setData({
         show: true,
-        hsb: this.rgbToHsb(this.data.rgba)
+        hsb: this.rgbToHsb(this.data.rgba),
+        hex: '#' + this.rgbToHex(this.data.rgba),
       })
-      this.setHexValue(this.data.rgba);
       wx.nextTick(() => {
         setTimeout(() => {
           this.setData({
             active: true
           });
           setTimeout(() => {
-            this.getSelectorQuery();
-          }, 350);
+            this.getBoundaryData();
+          }, 300);
         }, 50);
       })
-
     },
+
+    // 获取元素边界值
+    getBoundaryData() {
+      wx.createSelectorQuery().in(this)
+          .selectAll('.range-box')
+          .boundingClientRect(data => {
+            if (!data || data.length === 0) {
+              setTimeout(() => this.getBoundaryData(), 20)
+              return
+            }
+            this.setData({
+              boundaryData: data
+            })
+            this.setColorByOption(this.data.rgba);
+          })
+          .exec();
+    },
+
+    confirm() {
+      this.close();
+      this.triggerEvent('confirm', {
+        rgba: this.data.rgba,
+        hex: this.data.hex
+      })
+    },
+
     close() {
       this.setData({
         active: false
@@ -232,78 +256,154 @@ Component( {
         }, 500)
       })
     },
-    confirm() {
-      this.close();
-      this.triggerEvent('confirm', {
-        rgba: this.data.rgba,
-        hex: this.data.hex
-      })
-    },
-    // 切换模式
-    changeMode() {
-      this.setData({
-        mode: this.data.mode != 'rgb' ? 'rgb' : 'hex'
-      })
-    },
-    // 常用颜色选择
-    selectColor(event) {
-      this.setColorBySelect(event.currentTarget.dataset.color)
-    },
+
     touchstart(e) {
       const index = e.currentTarget.dataset.index;
       const {
         pageX,
         pageY
       } = e.touches[0];
-      this.setPosition(pageX, pageY, index);
+      this.setPointAndColor(pageX, pageY, index);
     },
+
     touchmove(e) {
       const index = e.currentTarget.dataset.index;
       const {
         pageX,
         pageY
       } = e.touches[0];
-      this.setPosition(pageX, pageY, index);
+      this.setPointAndColor(pageX, pageY, index);
     },
-    touchend(e) {},
-    /**
-     * 设置位置
-     */
-    setPosition(x, y, index) {
-      this.setData({
-        index: index
-      })
+    
+    // 设置位置和颜色
+    setPointAndColor(x, y, index) {
       const {
         top,
         left,
         width,
         height
-      } = this.data.position[index];
-      // 设置最大最小值
-      this.data.point[index].left = Math.max(0, Math.min(parseInt(x - left), width));
-      this.setData({
-        point: this.data.point
-      })
+      } = this.data.boundaryData[index];
+      // 颜色盒
       if (index == 0) {
-        this.data.point[index].top = Math.max(0, Math.min(parseInt(y - top), height));
-        // 设置颜色
-        this.data.hsb.s = parseInt((100 * this.data.point[index].left) / width);
-        this.data.hsb.b = parseInt(100 - (100 * this.data.point[index].top) / height);
-        this.setData({
-          point: this.data.point,
-          hsb: this.data.hsb
-        })
-        this.setColor();
-        this.setHexValue(this.data.rgba);
-      } else {
-        this.setControl(index, this.data.point[index].left);
+        this.changeColorBox(x, y, index, top, left, width, height);
+      }
+      // 颜色条
+      else if (index == 1) {
+        this.changeColorHSB(x, y, index, top, left, width, height);
+      }
+      // 透明度
+      else if (index == 2) {
+        this.changeTransparency(x, y, index, top, left, width, height);
+      }
+      // rgb条
+      else {
+        this.changeColorRGB(x, y, index, top, left, width, height);
       }
     },
-    /**
-     * 设置 rgb 颜色
-     */
+
+    // 点击操作颜色盒
+    changeColorBox(x, y, index, top, left, width, height) {
+      let pointTop = Math.max(0, Math.min(parseInt(y - top), height));
+      let pointLeft = Math.max(0, Math.min(parseInt(x - left), width));
+      // 设置颜色
+      let hsb = {
+        h: this.data.hsb.h,
+        s: parseInt((100 * pointLeft) / width),
+        b: parseInt(100 - (100 * pointTop) / height)
+      }
+      const rgb = this.hsbToRgb(hsb);
+      let rgba = {
+        r: rgb.r,
+        g: rgb.g,
+        b: rgb.b,
+        a: this.data.rgba.a
+      }
+      // 计算rgb条的位置
+      let rgb_r_left = parseInt(rgb.r / 255 * this.data.boundaryData[3].width);
+      let rgb_g_left = parseInt(rgb.g / 255 * this.data.boundaryData[4].width);
+      let rgb_b_left = parseInt(rgb.b / 255 * this.data.boundaryData[5].width);
+      // 设置data
+      this.setData({
+        ['point[' + index + ']']: {
+          top: pointTop,
+          left: pointLeft
+        },
+        ['point[3].left']: rgb_r_left,
+        ['point[4].left']: rgb_g_left,
+        ['point[5].left']: rgb_b_left,
+        hsb: hsb,
+        rgba: rgba,
+        hex: '#' + this.rgbToHex(rgb)
+      })
+    },
+
+    // 颜色条，饱和度
+    changeColorHSB(x, y, index, top, left, width, height) {
+      let pointLeft = Math.max(0, Math.min(parseInt(x - left), width));
+      let hsb = {
+        h: parseInt((360 * pointLeft) / width),
+        s: 100,
+        b: 100,
+      }
+      let rgb = this.hsbToRgb(this.data.hsb);
+      let rgba = {
+        r: rgb.r,
+        g: rgb.g,
+        b: rgb.b,
+        a: this.data.rgba.a
+      }
+      // 计算rgb条的位置
+      let rgb_r_left = parseInt(rgb.r / 255 * this.data.boundaryData[3].width);
+      let rgb_g_left = parseInt(rgb.g / 255 * this.data.boundaryData[4].width);
+      let rgb_b_left = parseInt(rgb.b / 255 * this.data.boundaryData[5].width);
+      this.setData({
+        ['point[' + index + '].left']: pointLeft,
+        ['point[3].left']: rgb_r_left,
+        ['point[4].left']: rgb_g_left,
+        ['point[5].left']: rgb_b_left,
+        hsb: hsb,
+        rgba: rgba,
+        hex: '#' + this.rgbToHex(rgb),
+        bgcolor: this.hsbToRgb(hsb)
+      })
+    },
+
+    // 透明度
+    changeTransparency(x, y, index, top, left, width, height) {
+      let pointLeft = Math.max(0, Math.min(parseInt(x - left), width));
+      this.setData({
+        ['point[' + index + '].left']: pointLeft,
+        'rgba.a': (pointLeft / width).toFixed(1)
+      })
+    },
+
+    // rgb条
+    changeColorRGB(x, y, index, top, left, width, height) {
+      let pointLeft = Math.max(0, Math.min(parseInt(x - left), width));
+      let pointValue = parseInt(pointLeft / width * 255);
+      let rgba = {
+        r: index == 3 ? pointValue : this.data.rgba.r,
+        g: index == 4 ? pointValue : this.data.rgba.g,
+        b: index == 5 ? pointValue : this.data.rgba.b,
+        a: this.data.rgba.a
+      }
+      let hsb = this.rgbToHsb(rgba);
+      // 计算颜色条的位置
+      let hsb_left = parseInt((hsb.h * this.data.boundaryData[1].width) / 360);
+      // 设置data
+      this.setData({
+        ['point[' + index + '].left']: pointLeft,
+        ['point[1].left']: hsb_left,
+        hsb: hsb,
+        rgba: rgba,
+        hex: '#' + this.rgbToHex(rgba),
+        bgcolor: this.hsbToRgb(hsb)
+      })
+    },
+
+    // 设置 rgb 颜色
     setColor() {
-      const rgb = this.HSBToRGB(this.data.hsb);
+      const rgb = this.hsbToRgb(this.data.hsb);
       let rgba = {
         r: rgb.r,
         g: rgb.g,
@@ -314,28 +414,28 @@ Component( {
         rgba: rgba
       })
     },
-    /**
-     * 设置十六进制颜色
-     * @param {Object} rgb
-     */
+
+    // 根据rgb设置十六进制颜色
     setHexValue(rgb) {
       this.setData({
         hex: '#' + this.rgbToHex(rgb)
       })
     },
-    setControl(index, x) {
+
+    // 设置颜色面板
+    setPanel(index, x) {
       const {
         top,
         left,
         width,
         height
-      } = this.data.position[index];
+      } = this.data.boundaryData[index];
 
       if (index == 1) {
         this.data.hsb.h = parseInt((360 * x) / width);
         this.setData({
           hsb: this.data.hsb,
-          bgcolor: this.HSBToRGB({
+          bgcolor: this.hsbToRgb({
             h: this.data.hsb.h,
             s: 100,
             b: 100
@@ -350,10 +450,66 @@ Component( {
       }
       this.setHexValue(this.data.rgba);
     },
-    /**
-     * rgb 转 二进制 hex
-     * @param {Object} rgb
-     */
+
+    // 切换模式
+    changeMode() {
+      this.setData({
+        mode: this.data.mode != 'rgb' ? 'rgb' : 'hex'
+      })
+    },
+    
+    // 常用颜色选择
+    selectColor(event) {
+      this.setColorByOption(event.currentTarget.dataset.color)
+    },
+    
+    setColorByOption(optionColor) {
+      const {
+        r,
+        g,
+        b,
+        a
+      } = optionColor;
+      let rgba = {
+        r: r ? parseInt(r) : 0,
+        g: g ? parseInt(g) : 0,
+        b: b ? parseInt(b) : 0,
+        a: a ? a : 0,
+      };
+      let hsb = this.rgbToHsb(rgba);
+      this.setData({
+        rgba: rgba,
+        hsb: hsb,
+        hex: '#' + this.rgbToHex(rgba),
+        bgcolor: this.hsbToRgb({h: hsb.h, s: 100, b: 100})
+      })
+      this.changePoint();
+    },
+    
+    changePoint() {
+      const [a, b, c, d, e, f] = this.data.boundaryData;
+      let point = [{
+          top: parseInt((100 - this.data.hsb.b) * a.height / 100), // 颜色盒子
+          left: parseInt(this.data.hsb.s * a.width / 100)
+        }, {
+          left: this.data.hsb.h / 360 * b.width // 颜色条
+        }, {
+          left: this.data.rgba.a * c.width // 透明度
+        }, {
+          left: this.data.rgba.r / 255 * d.width // rgb-r
+        }, {
+          left: this.data.rgba.g / 255 * e.width // rgb-g
+        }, {
+          left: this.data.rgba.b / 255 * f.width // rgb-b
+        }
+      ]
+
+      this.setData({
+        point: point,
+      })
+    },
+
+    // rgb 转 hex
     rgbToHex(rgb) {
       let hex = [rgb.r.toString(16), rgb.g.toString(16), rgb.b.toString(16)];
       hex.map(function(str, i) {
@@ -363,47 +519,33 @@ Component( {
       });
       return hex.join('');
     },
-    setColorBySelect(getrgb) {
-      const {
-        r,
-        g,
-        b,
-        a
-      } = getrgb;
-      let rgb = {}
-      rgb = {
-        r: r ? parseInt(r) : 0,
-        g: g ? parseInt(g) : 0,
-        b: b ? parseInt(b) : 0,
-        a: a ? a : 0,
+
+    // rgb 转 hsb
+    rgbToHsb(rgb) {
+      let hsb = {
+        h: 0,
+        s: 0,
+        b: 0
       };
-      this.setData({
-        rgba: rgb,
-        hsb: this.rgbToHsb(rgb)
-      })
-      this.changeViewByHsb();
+      let min = Math.min(rgb.r, rgb.g, rgb.b);
+      let max = Math.max(rgb.r, rgb.g, rgb.b);
+      let delta = max - min;
+      hsb.b = max;
+      hsb.s = max != 0 ? 255 * delta / max : 0;
+      if (hsb.s != 0) {
+        if (rgb.r == max) hsb.h = (rgb.g - rgb.b) / delta;
+        else if (rgb.g == max) hsb.h = 2 + (rgb.b - rgb.r) / delta;
+        else hsb.h = 4 + (rgb.r - rgb.g) / delta;
+      } else hsb.h = -1;
+      hsb.h *= 60;
+      if (hsb.h < 0) hsb.h = 0;
+      hsb.s *= 100 / 255;
+      hsb.b *= 100 / 255;
+      return hsb;
     },
-    changeViewByHsb() {
-      const [a, b, c, d, e, f] = this.data.position;
-      this.data.point[0].left = parseInt(this.data.hsb.s * a.width / 100);
-      this.data.point[0].top = parseInt((100 - this.data.hsb.b) * a.height / 100);
-      this.data.point[1].left = this.data.hsb.h / 360 * b.width;
-      this.data.point[2].left = this.data.rgba.a * c.width;
-      this.data.point[3].left = this.data.rgba.r / 255 * d.width;
-      this.data.point[4].left = this.data.rgba.g / 255 * e.width;
-      this.data.point[5].left = this.data.rgba.b / 255 * f.width;
-      this.setData({
-        point: this.data.point,
-        bgcolor: this.HSBToRGB({h: this.data.hsb.h, s: 100, b: 100})
-      })
-      this.setColor(this.data.hsb.h);
-      this.setHexValue(this.data.rgba);
-    },
-    /**
-     * hsb 转 rgb
-     * @param {Object} 颜色模式  H(hues)表示色相，S(saturation)表示饱和度，B（brightness）表示亮度
-     */
-    HSBToRGB(hsb) {
+
+    // hsb 转 rgb 颜色模式  H(hues)表示色相，S(saturation)表示饱和度，B（brightness）表示亮度
+    hsbToRgb(hsb) {
       let rgb = {};
       let h = Math.round(hsb.h);
       let s = Math.round((hsb.s * 255) / 100);
@@ -451,42 +593,5 @@ Component( {
         b: Math.round(rgb.b)
       };
     },
-    rgbToHsb(rgb) {
-      let hsb = {
-        h: 0,
-        s: 0,
-        b: 0
-      };
-      let min = Math.min(rgb.r, rgb.g, rgb.b);
-      let max = Math.max(rgb.r, rgb.g, rgb.b);
-      let delta = max - min;
-      hsb.b = max;
-      hsb.s = max != 0 ? 255 * delta / max : 0;
-      if (hsb.s != 0) {
-        if (rgb.r == max) hsb.h = (rgb.g - rgb.b) / delta;
-        else if (rgb.g == max) hsb.h = 2 + (rgb.b - rgb.r) / delta;
-        else hsb.h = 4 + (rgb.r - rgb.g) / delta;
-      } else hsb.h = -1;
-      hsb.h *= 60;
-      if (hsb.h < 0) hsb.h = 0;
-      hsb.s *= 100 / 255;
-      hsb.b *= 100 / 255;
-      return hsb;
-    },
-    getSelectorQuery() {
-      const views = wx.createSelectorQuery().in(this);
-      views.selectAll('.boxs')
-          .boundingClientRect(data => {
-            if (!data || data.length === 0) {
-              setTimeout(() => this.getSelectorQuery(), 20)
-              return
-            }
-            this.setData({
-              position: data
-            })
-            this.setColorBySelect(this.data.rgba);
-          })
-          .exec();
-    }
   }
 });
