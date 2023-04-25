@@ -345,7 +345,7 @@ Component( {
         s: 100,
         b: 100,
       }
-      let rgb = this.hsbToRgb(this.data.hsb);
+      let rgb = this.hsbToRgb(hsb);
       let rgba = {
         r: rgb.r,
         g: rgb.g,
