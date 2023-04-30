@@ -33,6 +33,8 @@ Component( {
     active: false,
     mode: 'rgb',
     boundaryData: [], // 元素边界信息
+    colorType: 'normal', // normal-正常颜色值，gradient-渐变色
+    gradient: '',
     hex: '#000000',
     rgba: {
       r: 255,
@@ -239,6 +241,7 @@ Component( {
     confirm() {
       this.close();
       this.triggerEvent('confirm', {
+        colorType: this.data.colorType,
         rgba: this.data.rgba,
         hex: this.data.hex
       })
