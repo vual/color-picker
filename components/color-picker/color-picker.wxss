@@ -25,25 +25,32 @@
 .cp-header {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	width: 100%;
 	height: 100rpx;
 	border-bottom: 1px #eee solid;
 	box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
 	background: #fff;
+	padding-left: 20rpx;
+	padding-right: 20rpx;
 }
 .cp-header-button {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	width: 150rpx;
-	height: 100rpx;
+	height: 80rpx;
 	font-size: 30rpx;
 	color: #666;
-	padding-left: 20rpx;
+	border: 2rpx solid #3963bc;
+	border-radius: 15rpx;
 }
-.cp-header-button:last-child {
-	justify-content: flex-end;
-	padding-right: 20rpx;
+
+.cp-button-confirm {
+	background-color: #3963bc;
+	color: #fff;
 }
+
 .cp-mask {
 	position: absolute;
 	top: 0;

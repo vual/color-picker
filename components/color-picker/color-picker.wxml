@@ -3,7 +3,7 @@
     <view class="cp-box {{active ? 'active': ''}}">
         <view class="cp-header">
             <view class="cp-header-button" bind:tap="close">取消</view>
-            <view class="cp-header-button" bind:tap="confirm">确认</view>
+            <view class="cp-header-button cp-button-confirm" bind:tap="confirm">确认</view>
         </view>
         <view class="cp-color__box" style="{{'background:'+('rgb('+bgcolor.r+','+bgcolor.g+','+bgcolor.b+')')+';'}}">
             <view class="cp-background range-box" data-index="0" bind:touchstart="touchstart" bind:touchmove="touchmove">
