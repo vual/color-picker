@@ -5,17 +5,17 @@
             <view class="cp-header-button" bind:tap="close">取消</view>
             <view class="cp-header-button cp-button-confirm" bind:tap="confirm">确认</view>
         </view>
-        <view class="cp-color__box" style="{{'background:'+('rgb('+bgcolor.r+','+bgcolor.g+','+bgcolor.b+')')+';'}}">
+        <view class="cp-color-box" style="{{'background:'+('rgb('+bgcolor.r+','+bgcolor.g+','+bgcolor.b+')')+';'}}">
             <view class="cp-background range-box" data-index="0" bind:touchstart="touchstart" bind:touchmove="touchmove">
                 <view class="cp-color-mask"></view>
                 <view class="cp-pointer" style="{{'top:'+(point[0].top-8+'px')+';'+('left:'+(point[0].left-8+'px')+';')}}"></view>
             </view>
         </view>
-        <view class="cp-control__box">
-            <view class="cp-control__color">
-                <view class="cp-control__color-content" style="{{'background:'+('rgba('+rgba.r+','+rgba.g+','+rgba.b+','+rgba.a+')')+';'}}"></view>
+        <view class="cp-control-box">
+            <view class="cp-control-color">
+                <view class="cp-control-color-content" style="{{'background:'+('rgba('+rgba.r+','+rgba.g+','+rgba.b+','+rgba.a+')')+';'}}"></view>
             </view>
-            <view class="cp-control-box__item">
+            <view class="cp-control-box-item">
                 <view class="cp-controller range-box" data-index="1" bind:touchstart="touchstart" bind:touchmove="touchmove">
                     <view class="cp-hue">
                         <view class="cp-circle" style="{{'left:'+(point[1].left-12+'px')+';'}}"></view>
@@ -28,7 +28,7 @@
                 </view>
             </view>
         </view>
-        <view class="cp-result__box">
+        <view class="cp-rgb-control-box">
             <block wx:if="{{mode == 'rgb'}}">
                 <view class="cp-rgb-group">
                     <view class="cp-rgb">
@@ -62,21 +62,21 @@
             </block>
             <block wx:else>
                 <view class="cp-hex-box">
-                    <view class="cp-result__box-input">{{hex}}</view>
-                    <view class="cp-result__box-text">十六进制</view>
+                    <view class="cp-hex-box-input">{{hex}}</view>
+                    <view class="cp-hex-box-text">十六进制</view>
                 </view>
             </block>
 
-<!--            <view class="cp-result__item cp-change" bind:tap="changeMode">-->
-<!--                <view class="cp-result__box-input">-->
+<!--            <view class="cp-change" bind:tap="changeMode">-->
+<!--                <view class="cp-change-button">-->
 <!--                    <text decode="true" class="cp-change-text">&lt;&nbsp;&gt;</text>-->
 <!--                </view>-->
 <!--            </view>-->
         </view>
-        <view class="cp-alternative">
+        <view class="cp-option">
             <block wx:for="{{colorList}}" wx:for-item="item" wx:for-index="index" wx:key="index">
-                <view class="cp-alternative__item">
-                    <view class="cp-alternative__item-content" data-color="{{item}}" style="{{'background:'+('rgba('+item.r+','+item.g+','+item.b+','+item.a+')')+';'}}" bind:tap="selectColor"></view>
+                <view class="cp-option-item">
+                    <view class="cp-option-item-content" data-color="{{item}}" style="{{'background:'+('rgba('+item.r+','+item.g+','+item.b+','+item.a+')')+';'}}" bind:tap="selectColor"></view>
                 </view>
             </block>
         </view>
