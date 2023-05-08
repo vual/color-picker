@@ -33,6 +33,8 @@ Component( {
     active: false,
     mode: 'rgb',
     boundaryData: [], // 元素边界信息
+    colorType: 'normal', // normal-正常颜色值，gradient-渐变色
+    gradient: '',
     hex: '#000000',
     rgba: {
       r: 255,
@@ -239,6 +241,7 @@ Component( {
     confirm() {
       this.close();
       this.triggerEvent('confirm', {
+        colorType: this.data.colorType,
         rgba: this.data.rgba,
         hex: this.data.hex
       })
@@ -399,56 +402,6 @@ Component( {
         hex: '#' + this.rgbToHex(rgba),
         bgcolor: this.hsbToRgb(hsb)
       })
-    },
-
-    // 设置 rgb 颜色
-    setColor() {
-      const rgb = this.hsbToRgb(this.data.hsb);
-      let rgba = {
-        r: rgb.r,
-        g: rgb.g,
-        b: rgb.b,
-        a: this.data.rgba.a
-      }
-      this.setData({
-        rgba: rgba
-      })
-    },
-
-    // 根据rgb设置十六进制颜色
-    setHexValue(rgb) {
-      this.setData({
-        hex: '#' + this.rgbToHex(rgb)
-      })
-    },
-
-    // 设置颜色面板
-    setPanel(index, x) {
-      const {
-        top,
-        left,
-        width,
-        height
-      } = this.data.boundaryData[index];
-
-      if (index == 1) {
-        this.data.hsb.h = parseInt((360 * x) / width);
-        this.setData({
-          hsb: this.data.hsb,
-          bgcolor: this.hsbToRgb({
-            h: this.data.hsb.h,
-            s: 100,
-            b: 100
-          })
-        })
-        this.setColor()
-      } else {
-        this.data.rgba.a = (x / width).toFixed(1);
-        this.setData({
-          rgba: this.data.rgba
-        })
-      }
-      this.setHexValue(this.data.rgba);
     },
 
     // 切换模式
