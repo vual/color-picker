@@ -1,0 +1,7 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="color-button">
+    <button bind:tap="openPicker" style="background-color: rgba({{rgba.r + ',' + rgba.g + ',' + rgba.b + ',' + rgba.a}})">选择颜色</button>
+    <color-picker show="{{colorPickerShow}}" defaultColor="{{defaultColor}}" bind:confirm="colorConfirm"></color-picker>
+  </view>
+</view>

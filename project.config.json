@@ -37,13 +37,13 @@
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "condition": false
   },
   "compileType": "miniprogram",
   "libVersion": "2.19.4",
   "appid": "wx712188efb30b430d",
   "projectname": "miniprogram-92",
-  "isGameTourist": false,
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",

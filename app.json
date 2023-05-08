@@ -1,12 +1,11 @@
 {
   "pages":[
-    "pages/index/index",
-    "pages/logs/logs"
+    "pages/index/index"
   ],
   "window":{
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Weixin",
+    "navigationBarTitleText": "color-picker",
     "navigationBarTextStyle":"black"
   },
   "style": "v2",
