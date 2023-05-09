@@ -9,8 +9,5 @@
     "navigationBarTextStyle":"black"
   },
   "style": "v2",
-  "sitemapLocation": "sitemap.json",
-  "usingComponents": {
-    "color-picker": "/components/color-picker/color-picker"
-  }
+  "sitemapLocation": "sitemap.json"
 }
