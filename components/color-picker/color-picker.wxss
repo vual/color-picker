@@ -284,11 +284,10 @@
 	flex-wrap: wrap;
 	/* justify-content: space-between; */
 	width: 100%;
-	padding-right: 10rpx;
 	box-sizing: border-box;
 }
 .cp-option-item {
-	margin-left: 12rpx;
+	margin-left: 10rpx;
 	margin-top: 10rpx;
 	width: 50rpx;
 	height: 50rpx;
