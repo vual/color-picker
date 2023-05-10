@@ -2,6 +2,12 @@
 
 微信小程序拾色器（颜色选择器或取色器）组件，快速获取颜色值，小程序原生语法，方便集成。
 
+项目仓库地址：
+
+[github](https://github.com/vual/color-picker)
+
+[gitee](https://gitee.com/vual/color-picker)
+
 # 功能介绍
     
     1.点击颜色盒子，直接选择颜色。
