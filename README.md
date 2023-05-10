@@ -54,5 +54,6 @@
     </view>
 
 # 演示
+   <img src="./images/demo.gif" style="size: 50%">
 
    ![image](./images/demo.gif)
