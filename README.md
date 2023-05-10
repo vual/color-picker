@@ -54,5 +54,4 @@
     </view>
 
 # 演示
-
-    ![demo.gif](https://github.com/vual/color-picker/raw/main/images/demo.gif)
+   ![image](./images/demo.gif)
