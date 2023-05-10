@@ -55,4 +55,4 @@
 
 # 演示
 
-    
+    ![demo.gig](https://github.com/vual/color-picker/raw/main/images/demo.gif)
